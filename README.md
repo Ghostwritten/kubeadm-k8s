@@ -1,6 +1,5 @@
 # kubeadm-k8s
-kubeadm deploy k8s  rapidly
-
+kubeadm deploy k8s v1.13 rapidly, If you do not want to be another version, you need to configure the version you need in `env.sh`。
 ## 1. 准备条件
 1.联网
 2.虚拟机
@@ -22,7 +21,7 @@ hostnamectl set-hostname node
 master执行
 ```bash
 ssh-keygen     # 每台机器执行这个命令， 一路回车即可 
- ssh-copy-id  node      # 到master上拷贝公钥到其他节点，这里需要输入 yes和密码
+ssh-copy-id  node      # 到master上拷贝公钥到其他节点，这里需要输入 yes和密码
 ```
 
 ### 2.3 git拉取部署项目(全部执行)
@@ -39,7 +38,7 @@ $ vim env.sh
 
 export master=192.168.211.12
 export node=192.168.211.13
-export tag=v1.10.0
+export version=v1.13.0
 ```
 
 ## 3. 初始化操作(全部执行)
@@ -47,22 +46,21 @@ export tag=v1.10.0
 bash init.sh
 ```
 
-
-## 4. 安装docker (全部执行)
-```bash
-bash docker.sh
-```
-
-## 5. 安装kubeadm、kubelet、kubectl 和下载镜像(全部执行)
-```bash
-bash k8s-start.sh
-```
-## 6. 检查(全部执行)
+## 4. 检查(全部执行)
 ```bash
 bash check.sh
 ```
 最好重启reboot一遍。
 
+## 5. 安装docker (全部执行)
+```bash
+bash docker.sh
+```
+
+## 6. 安装kubeadm、kubelet、kubectl 和下载镜像(全部执行)
+```bash
+bash k8s-start.sh
+```
 ## 7. 部署master(master执行)
 ```bash
 bash k8s-master.sh
@@ -137,3 +135,11 @@ kubectl create -f kube-dashboard-access.yaml
 刷新界面，问题解决。
 ![avatar](https://img-blog.csdnimg.cn/20200419234058939.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3hpeGloYWhhbGVsZWhlaGU=,size_16,color_FFFFFF,t_70)
 
+
+## 11. 问题
+### 11.1 The connection to the server localhost:8080 was refused - did you specify the right host or port?
+node节点执行`kubectl get pods`报类似错误。
+解决方法:(master执行)
+```bash
+scp /etc/kubernetes/admin.conf root@192.168.211.13:/root/.kube/config
+```
